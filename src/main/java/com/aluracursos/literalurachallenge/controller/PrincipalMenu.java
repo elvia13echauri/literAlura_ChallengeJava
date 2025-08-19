@@ -26,13 +26,10 @@ public class PrincipalMenu {
             var menu = """
                     1 - Buscar libro por Titulo
                     2 - Lista de Libros registrados
-                    3 - 
-                    4 - 
-                    5 - 
-                    6 - 
-                    7 - 
-                    8 - 
-                    9 - 
+                    3 - Listar Autores registrados
+                    4 - Listar autores vivos en determinado año
+                    5 - listar libros por idiomas
+                    6 -            
                                   
                     0 - Salir
                     """;
@@ -46,12 +43,22 @@ public class PrincipalMenu {
                 case "2":
                     muestraLibrosRegistrados();
                     break;
+                case "3":
+                    muestraLibrosRegistrados();
+                    break;
+                case "4":
+                    muestraLibrosRegistrados();
+                    break;
+                case "5":
+                    muestraLibrosRegistrados();
+                    break;
                 
                 case "0":
                     System.out.println("Cerrando la aplicación...");
                     break;
                 default:
                     System.out.println("Opción inválida");
+                    break;
             }
         }
 
