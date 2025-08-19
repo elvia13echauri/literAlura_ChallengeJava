@@ -1,15 +1,14 @@
 package com.aluracursos.literalurachallenge.controller;
 
+import com.aluracursos.literalurachallenge.model.DatosAutor;
 import com.aluracursos.literalurachallenge.model.DatosLibro;
 import com.aluracursos.literalurachallenge.model.Datos;
 import com.aluracursos.literalurachallenge.model.Libro;
 import com.aluracursos.literalurachallenge.service.ConsumoAPI;
 import com.aluracursos.literalurachallenge.service.ConvierteDatos;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PrincipalMenu {
     private static final String URL_BASE = "http://gutendex.com/books/";
@@ -17,6 +16,7 @@ public class PrincipalMenu {
     private ConvierteDatos conversor = new ConvierteDatos();
     private Scanner teclado = new Scanner(System.in);
     private List<Libro> libros = new ArrayList<>();
+    private Set<Autor> autores = new HashSet<>();
 
 
 
@@ -44,10 +44,10 @@ public class PrincipalMenu {
                     muestraLibrosRegistrados();
                     break;
                 case "3":
-                    muestraLibrosRegistrados();
+                    muestraAutoresRegistrados();
                     break;
                 case "4":
-                    muestraLibrosRegistrados();
+                    muestraAutoresVivosPorAnio();
                     break;
                 case "5":
                     muestraLibrosRegistrados();
@@ -77,6 +77,9 @@ public class PrincipalMenu {
             Libro libroEncontrado = new Libro(libroBuscado.get());
             libros.add(libroEncontrado);
             System.out.println(libroEncontrado.toString());
+            autores.addAll(libroEncontrado.getAutores().stream()
+                    .map(d -> new Autor(d))
+                    .collect(Collectors.toSet()));
         }else {
             System.out.println("Libro no encontrado");
         }
@@ -85,5 +88,21 @@ public class PrincipalMenu {
     private void muestraLibrosRegistrados() {
         libros.stream()
                 .forEach(l -> System.out.println(l.toString()));
+    }
+
+    private void muestraAutoresRegistrados() {
+        autores.stream()
+                .forEach(a -> System.out.println(a.toString()));
+    }
+
+    private void muestraAutoresVivosPorAnio() {
+        System.out.println("Ingresa el año donde deseas buscar autores vivos: ");
+        Integer anioBuscado = teclado.nextInt();
+        teclado.nextLine();
+        autores.stream()
+                .filter(a -> a.getAnioMuerte() >= anioBuscado && a.getAnioNacimiento() <= anioBuscado)
+                .peek(System.out::println)
+                .forEach(a -> a.toString());
+
     }
 }

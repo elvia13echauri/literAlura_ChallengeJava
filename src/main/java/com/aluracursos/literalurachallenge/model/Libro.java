@@ -6,7 +6,7 @@ public class Libro {
 
     private String id;
     private String titulo;
-    private List<AutorData> autores;
+    private List<DatosAutor> autores;
     private List<String> idiomas;
     private Double numeroDescargas;
 
@@ -34,11 +34,11 @@ public class Libro {
         this.titulo = titulo;
     }
 
-    public List<AutorData> getAutores() {
+    public List<DatosAutor> getAutores() {
         return autores;
     }
 
-    public void setAutores(List<AutorData> autores) {
+    public void setAutores(List<DatosAutor> autores) {
         this.autores = autores;
     }
 
