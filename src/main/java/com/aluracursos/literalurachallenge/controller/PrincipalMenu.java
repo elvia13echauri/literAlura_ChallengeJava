@@ -6,6 +6,8 @@ import com.aluracursos.literalurachallenge.model.Libro;
 import com.aluracursos.literalurachallenge.service.ConsumoAPI;
 import com.aluracursos.literalurachallenge.service.ConvierteDatos;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -14,6 +16,7 @@ public class PrincipalMenu {
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
     private Scanner teclado = new Scanner(System.in);
+    private List<Libro> libros = new ArrayList<>();
 
 
 
@@ -22,7 +25,7 @@ public class PrincipalMenu {
         while (!opcion.equals("0")) {
             var menu = """
                     1 - Buscar libro por Titulo
-                    2 - 
+                    2 - Lista de Libros registrados
                     3 - 
                     4 - 
                     5 - 
@@ -39,6 +42,9 @@ public class PrincipalMenu {
             switch (opcion) {
                 case "1":
                     buscarLibroPorTitulo();
+                    break;
+                case "2":
+                    muestraLibrosRegistrados();
                     break;
                 
                 case "0":
@@ -62,9 +68,15 @@ public class PrincipalMenu {
         if (libroBuscado.isPresent()){
             System.out.println("Libro encontrado: ");
             Libro libroEncontrado = new Libro(libroBuscado.get());
+            libros.add(libroEncontrado);
             System.out.println(libroEncontrado.toString());
         }else {
             System.out.println("Libro no encontrado");
         }
+    }
+
+    private void muestraLibrosRegistrados() {
+        libros.stream()
+                .forEach(l -> System.out.println(l.toString()));
     }
 }
