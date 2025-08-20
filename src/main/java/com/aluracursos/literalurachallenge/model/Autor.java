@@ -1,13 +1,25 @@
-package com.aluracursos.literalurachallenge.controller;
+package com.aluracursos.literalurachallenge.model;
 
 import com.aluracursos.literalurachallenge.model.DatosAutor;
+import jakarta.persistence.*;
 
 import java.time.Year;
+import java.util.HashSet;
+import java.util.Set;
 
+@Entity
+@Table(name = "autores")
 public class Autor {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long autor_id;
     private String nombre;
     private Integer anioNacimiento;
     private Integer anioMuerte;
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    private Set<Libro> libros = new HashSet<>();
+
+    public Autor(){}
 
     public Autor(DatosAutor datos){
         this.nombre = datos.nombre();

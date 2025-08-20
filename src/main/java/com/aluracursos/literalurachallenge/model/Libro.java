@@ -1,28 +1,38 @@
 package com.aluracursos.literalurachallenge.model;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 
+@Entity
+@Table(name = "libros")
 public class Libro {
 
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
     private String titulo;
-    private List<DatosAutor> autores;
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
+    @ElementCollection
     private List<String> idiomas;
     private Double numeroDescargas;
 
+    public Libro(){}
+
     public Libro(DatosLibro data){
-        this.id = data.id();
         this.titulo = data.titulo();
-        this.autores = data.autores();
         this.idiomas = data.idiomas();
         this.numeroDescargas = data.numeroDescargas();
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -34,12 +44,12 @@ public class Libro {
         this.titulo = titulo;
     }
 
-    public List<DatosAutor> getAutores() {
-        return autores;
+    public Autor getAutor() {
+        return autor;
     }
 
-    public void setAutores(List<DatosAutor> autores) {
-        this.autores = autores;
+    public void setAutor(Autor autor) {
+            this.autor = autor;
     }
 
     public List<String> getIdiomas() {
@@ -61,7 +71,7 @@ public class Libro {
     @Override
     public String toString() {
         return "Titulo: '" + titulo + '\'' +
-                ", Autores: " + autores +
+                ", Autores: " + autor +
                 ", Idiomas: " + idiomas +
                 ", Numero de Descargas: " + numeroDescargas;
     }

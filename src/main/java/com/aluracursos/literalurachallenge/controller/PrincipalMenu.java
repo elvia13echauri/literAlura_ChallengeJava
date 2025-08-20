@@ -1,11 +1,11 @@
 package com.aluracursos.literalurachallenge.controller;
 
-import com.aluracursos.literalurachallenge.model.DatosAutor;
-import com.aluracursos.literalurachallenge.model.DatosLibro;
-import com.aluracursos.literalurachallenge.model.Datos;
-import com.aluracursos.literalurachallenge.model.Libro;
+import com.aluracursos.literalurachallenge.model.*;
+import com.aluracursos.literalurachallenge.repository.AutorRepository;
+import com.aluracursos.literalurachallenge.repository.LibroRepository;
 import com.aluracursos.literalurachallenge.service.ConsumoAPI;
 import com.aluracursos.literalurachallenge.service.ConvierteDatos;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,10 +17,15 @@ public class PrincipalMenu {
     private Scanner teclado = new Scanner(System.in);
     private List<Libro> libros = new ArrayList<>();
     private Set<Autor> autores = new HashSet<>();
+    private LibroRepository repositoryL;
+    private AutorRepository repositoryA;
+    Optional<DatosLibro> libroBuscado;
 
 
 
-    public void muestraElMenu() {
+    public void muestraElMenu(LibroRepository repositorioLibro, AutorRepository repositorioAutor) {
+        this.repositoryL = repositorioLibro;
+        this.repositoryA = repositorioAutor;
         String opcion = "-1";
         while (!opcion.equals("0")) {
             var menu = """
@@ -52,7 +57,7 @@ public class PrincipalMenu {
                 case "5":
                     muestraLibrosRegistrados();
                     break;
-                
+
                 case "0":
                     System.out.println("Cerrando la aplicación...");
                     break;
@@ -64,25 +69,36 @@ public class PrincipalMenu {
 
     }
 
+    private Datos getDatosLibro(String nombreLibro){
+        var json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + nombreLibro.toLowerCase().replace(" ","+"));
+        System.out.println(json);
+        Datos datosBusqueda = conversor.obtenerDatos(json, Datos.class);
+        return datosBusqueda;
+    }
+
     private void buscarLibroPorTitulo() {
-        System.out.println("Ingresa el nombre del libro que deseas buscar:");
-        var tituloLibro = teclado.nextLine();
-        var json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ","+"));
-        var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
-        Optional<DatosLibro> libroBuscado = datosBusqueda.results().stream()
-                .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
+        System.out.println("Escribe el nombre del libro que deseas buscar");
+        var nombreLibro = teclado.nextLine().toLowerCase();
+        Datos datos = getDatosLibro(nombreLibro);
+        libroBuscado = datos.results().stream()
+                .filter(l -> l.titulo().toUpperCase().contains(nombreLibro.toUpperCase()))
                 .findFirst();
         if (libroBuscado.isPresent()){
             System.out.println("Libro encontrado: ");
             Libro libroEncontrado = new Libro(libroBuscado.get());
-            libros.add(libroEncontrado);
+            DatosAutor dataAuxiliar = new DatosAutor(libroBuscado.get().autores().get(0).nombre(),
+                    libroBuscado.get().autores().get(0).fechaNaciemiento(),
+                    libroBuscado.get().autores().get(0).fechaMuerte());
+            Autor autorFinal = repositoryA.findByNombre(dataAuxiliar.nombre())
+                    .orElseGet(()-> repositoryA.save(new Autor(dataAuxiliar)));
+            libroEncontrado.setAutor(autorFinal);
+            System.out.println("este autor se guardo:" + libroEncontrado.getAutor());
+            repositoryL.save(libroEncontrado);
             System.out.println(libroEncontrado.toString());
-            autores.addAll(libroEncontrado.getAutores().stream()
-                    .map(d -> new Autor(d))
-                    .collect(Collectors.toSet()));
         }else {
             System.out.println("Libro no encontrado");
         }
+
     }
 
     private void muestraLibrosRegistrados() {
